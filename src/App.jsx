@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 // ─── CATALOGUE ───────────────────────────────────────────────────────────────
 const BAREME_ECO = [
@@ -19,15 +20,25 @@ const FINITIONS = {
 
 const mkOpts = (arr) => arr.map(f => ({ label:f.label, surcout:f.surcout ?? 0 }));
 
+const ACC_SOLO = [{key:"S",label:"Siège",surcout:180},{key:"SE",label:"Siège ergonomique",surcout:320},{key:"TBR",label:"Table bras rabattable",surcout:95},{key:"TE",label:"Table escamotable",surcout:140},{key:"IND",label:"Éclairage LED indirect",surcout:210},{key:"T",label:"Tablette",surcout:65},{key:"O",label:"Prise électrique",surcout:55},{key:"BUR",label:"Bureau intégré",surcout:175}];
+const OPTS_FULL = { structure:mkOpts(FINITIONS.structure), exterieur:mkOpts(FINITIONS.exterieur), interieur:mkOpts(FINITIONS.interieur), fond:mkOpts(FINITIONS.fond), tissuInterieur:mkOpts(FINITIONS.tissuInterieur) };
+const OPTS_EMPTY = {structure:[],exterieur:[],interieur:[],fond:[],tissuInterieur:[]};
+
 const CATALOGUE = {
-  SOLO:        { id:"SOLO",        label:"Solo",           icon:"▪",   paroisFond:4, modules:1, poidsBrut:80,  prixBase:3200,  options:{ structure:mkOpts(FINITIONS.structure), exterieur:mkOpts(FINITIONS.exterieur), interieur:mkOpts(FINITIONS.interieur), fond:mkOpts(FINITIONS.fond), tissuInterieur:mkOpts(FINITIONS.tissuInterieur) }, accessoires:[{key:"S",label:"Siège",surcout:180},{key:"SE",label:"Siège ergonomique",surcout:320},{key:"TBR",label:"Table bras rabattable",surcout:95},{key:"TE",label:"Table escamotable",surcout:140},{key:"IND",label:"Éclairage LED indirect",surcout:210},{key:"T",label:"Tablette",surcout:65},{key:"O",label:"Prise électrique",surcout:55},{key:"BUR",label:"Bureau intégré",surcout:175}] },
-  SOLO_BUREAU: { id:"SOLO_BUREAU", label:"Solo Bureau",    icon:"▪",   paroisFond:4, modules:1, poidsBrut:95,  prixBase:3600,  options:{structure:[],exterieur:[],interieur:[],fond:[],tissuInterieur:[]}, accessoires:[] },
-  SOLO_FLEX:   { id:"SOLO_FLEX",   label:"Solo Flex",      icon:"▪",   paroisFond:4, modules:1, poidsBrut:88,  prixBase:3400,  options:{structure:[],exterieur:[],interieur:[],fond:[],tissuInterieur:[]}, accessoires:[] },
-  DUO:         { id:"DUO",         label:"Duo",            icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:145, prixBase:5200,  options:{structure:[],exterieur:[],interieur:[],fond:[],tissuInterieur:[]}, accessoires:[] },
-  QUATTRO:     { id:"QUATTRO",     label:"Quattro",        icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:190, prixBase:6800,  options:{structure:[],exterieur:[],interieur:[],fond:[],tissuInterieur:[]}, accessoires:[] },
-  SIXO:        { id:"SIXO",        label:"Sixo",           icon:"▪▪▪", paroisFond:4, modules:3, poidsBrut:230, prixBase:8400,  options:{structure:[],exterieur:[],interieur:[],fond:[],tissuInterieur:[]}, accessoires:[] },
-  XL_2MOD:     { id:"XL_2MOD",     label:"XL (2 modules)", icon:"▬▬",  paroisFond:6, modules:2, poidsBrut:310, prixBase:11500, options:{structure:[],exterieur:[],interieur:[],fond:[],tissuInterieur:[]}, accessoires:[] },
-  XL_3MOD:     { id:"XL_3MOD",     label:"XL (3 modules)", icon:"▬▬▬", paroisFond:8, modules:3, poidsBrut:420, prixBase:15800, options:{structure:[],exterieur:[],interieur:[],fond:[],tissuInterieur:[]}, accessoires:[] },
+  // ── Gamme Premium ──────────────────────────────────────────────────────────
+  SOLO:        { id:"SOLO",        gamme:"premium",     label:"Solo",           icon:"▪",   paroisFond:4, modules:1, poidsBrut:80,  prixBase:3200,  options:OPTS_FULL,  accessoires:ACC_SOLO },
+  SOLO_BUREAU: { id:"SOLO_BUREAU", gamme:"premium",     label:"Solo Bureau",    icon:"▪",   paroisFond:4, modules:1, poidsBrut:95,  prixBase:3600,  options:OPTS_EMPTY, accessoires:[] },
+  SOLO_FLEX:   { id:"SOLO_FLEX",   gamme:"premium",     label:"Solo Flex",      icon:"▪",   paroisFond:4, modules:1, poidsBrut:88,  prixBase:3400,  options:OPTS_EMPTY, accessoires:[] },
+  DUO:         { id:"DUO",         gamme:"premium",     label:"Duo",            icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:145, prixBase:5200,  options:OPTS_EMPTY, accessoires:[] },
+  QUATTRO:     { id:"QUATTRO",     gamme:"premium",     label:"Quattro",        icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:190, prixBase:6800,  options:OPTS_EMPTY, accessoires:[] },
+  SIXO:        { id:"SIXO",        gamme:"premium",     label:"Sixo",           icon:"▪▪▪", paroisFond:4, modules:3, poidsBrut:230, prixBase:8400,  options:OPTS_EMPTY, accessoires:[] },
+  XL_2MOD:     { id:"XL_2MOD",     gamme:"premium",     label:"XL (2 modules)", icon:"▬▬",  paroisFond:6, modules:2, poidsBrut:310, prixBase:11500, options:OPTS_EMPTY, accessoires:[] },
+  XL_3MOD:     { id:"XL_3MOD",     gamme:"premium",     label:"XL (3 modules)", icon:"▬▬▬", paroisFond:8, modules:3, poidsBrut:420, prixBase:15800, options:OPTS_EMPTY, accessoires:[] },
+  // ── Gamme Essentielle ──────────────────────────────────────────────────────
+  ESS_SOLO:    { id:"ESS_SOLO",    gamme:"essentielle", label:"Solo Essentiel",    icon:"▪",   paroisFond:4, modules:1, poidsBrut:65,  prixBase:2200, options:OPTS_FULL,  accessoires:ACC_SOLO },
+  ESS_DUO:     { id:"ESS_DUO",     gamme:"essentielle", label:"Duo Essentiel",     icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:120, prixBase:3800, options:OPTS_EMPTY, accessoires:[] },
+  ESS_QUATTRO: { id:"ESS_QUATTRO", gamme:"essentielle", label:"Quattro Essentiel", icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:160, prixBase:5000, options:OPTS_EMPTY, accessoires:[] },
+  ESS_SIXO:    { id:"ESS_SIXO",    gamme:"essentielle", label:"Sixo Essentiel",    icon:"▪▪▪", paroisFond:4, modules:3, poidsBrut:190, prixBase:6200, options:OPTS_EMPTY, accessoires:[] },
 };
 
 const OPTION_LABELS = { structure:"Structure", exterieur:"Extérieur", interieur:"Intérieur", fond:"Fond de paroi", tissuInterieur:"Tissu intérieur" };
@@ -55,80 +66,19 @@ const Tag=({color=C.blue,children})=>(<span style={{display:"inline-block",paddi
 const StepDot=({n,label,active,done})=>(<div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:28,height:28,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,background:done?C.text:active?C.blueBg:"#f0f0f0",color:done?"#fff":active?C.blue:"#aaa",border:active?`2px solid ${C.blue}`:"2px solid transparent"}}>{done?"✓":n}</div><span style={{fontSize:12,color:active?C.text:done?"#555":"#bbb",fontWeight:active?600:400}}>{label}</span></div>);
 const PrixBar=({prix,qty})=>(<div style={{background:"#f0fdf4",border:"1.5px solid #bbf7d0",borderRadius:10,padding:"10px 14px",display:"flex",gap:16,flexWrap:"wrap",alignItems:"center"}}>{[["Base",prix.prixBase?.toLocaleString("fr-FR")+" €",C.text],["Options",(prix.surcoûts>=0?"+":"")+prix.surcoûts?.toLocaleString("fr-FR")+" €",C.blue],["Éco",prix.eco?.toFixed(2)+" €","#92400e"],["Unitaire HT",prix.unitaire?.toLocaleString("fr-FR")+" €",C.text]].map(([l,v,c])=>(<div key={l}><div style={{fontSize:9,fontWeight:700,color:"#aaa",textTransform:"uppercase"}}>{l}</div><div style={{fontSize:13,fontWeight:700,color:c}}>{v}</div></div>))}<div style={{borderLeft:"2px solid #bbf7d0",paddingLeft:14,marginLeft:4}}><div style={{fontSize:9,fontWeight:700,color:"#aaa",textTransform:"uppercase"}}>Total × {qty||1}</div><div style={{fontSize:17,fontWeight:800,color:C.green}}>{prix.total?.toLocaleString("fr-FR")} €</div></div></div>);
 
-// ─── 3D CABIN BUILDER ────────────────────────────────────────────────────────
-function buildCabin(modele, config) {
-  const group = new THREE.Group();
-  const mods  = modele.modules || 1;
-  const isXL  = modele.id?.startsWith("XL");
-  const Wm    = isXL ? 2.2 : 1.55;
-  const H     = 2.18, D = isXL ? 2.2 : 1.55, totW = Wm * mods, t = 0.055;
-
-  const extF  = FINITIONS.exterieur.find(f=>f.label===config.exterieur)          || FINITIONS.exterieur[0];
-  const strF  = FINITIONS.structure.find(f=>f.label===config.structure)          || FINITIONS.structure[0];
-  const fondF = FINITIONS.fond.find(f=>f.label===config.fond)                    || FINITIONS.fond[0];
-  const tisF  = FINITIONS.tissuInterieur.find(f=>f.label===config.tissuInterieur)|| FINITIONS.tissuInterieur[0];
-
-  const mExt  = new THREE.MeshStandardMaterial({color:extF.color,  roughness:extF.roughness,  metalness:0.01, side:THREE.FrontSide});
-  const mStr  = new THREE.MeshStandardMaterial({color:strF.color,  roughness:strF.roughness,  metalness:0.08});
-  const mFond = new THREE.MeshStandardMaterial({color:fondF.color, roughness:fondF.roughness||0.5, metalness:fondF.metalness||0, transparent:fondF.transparent||false, opacity:fondF.opacity??1, side:THREE.DoubleSide});
-  const mTis  = new THREE.MeshStandardMaterial({color:tisF.color,  roughness:0.92});
-  const mGlass= new THREE.MeshStandardMaterial({color:0xbbd6e8, transparent:true, opacity:0.18, roughness:0.04, metalness:0.1, side:THREE.DoubleSide});
-  const mFloor= new THREE.MeshStandardMaterial({color:strF.color,  roughness:0.88});
-
-  const box=(w,h,d,mat,x,y,z,cast=true)=>{ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.position.set(x,y,z); m.castShadow=cast; m.receiveShadow=true; group.add(m); };
-  const cyl=(r,h,mat,x,y,z)=>{ const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,16),mat); m.position.set(x,y,z); m.castShadow=true; group.add(m); };
-
-  box(totW+t*2, t, D+t*2, mExt,   0,  H/2, 0);
-  box(totW+t*2, t, D+t*2, mFloor, 0, -H/2, 0, false);
-  box(t, H, D, mExt, -(totW/2)-t/2, 0, 0);
-  box(t, H, D, mExt,  (totW/2)+t/2, 0, 0);
-  box(totW, H, t, mFond, 0, 0, -(D/2)-t/2);
-  box(totW-t*3, H*0.74, t*0.4, mGlass, 0, -H*0.09, D/2);
-  box(totW, t*1.2, t*1.2, mStr, 0,  H/2-t*0.6, D/2);
-  box(totW, t*1.2, t*1.2, mStr, 0, -H/2+t*0.6, D/2);
-  box(t*1.4, H, t*1.4, mStr, -(totW/2), 0, D/2);
-  box(t*1.4, H, t*1.4, mStr,  (totW/2), 0, D/2);
-  [[-totW/2,D/2],[totW/2,D/2],[-totW/2,-D/2],[totW/2,-D/2]].forEach(([cx,cz])=>cyl(0.032,H,mStr,cx,0,cz));
-  if(mods>1&&isXL) for(let i=1;i<mods;i++) box(t,H,D,mStr,-totW/2+Wm*i,0,0);
-  box(totW-t*3, t*0.4, D-t*3, mTis, 0, H/2-t*1.8, 0, false);
-
-  const acc = config.accessoires||{};
-  if(acc.S||acc.SE||acc.SEO){
-    const ms=new THREE.MeshStandardMaterial({color:acc.SE||acc.SEO?0x111111:0x2a2a2a,roughness:0.65});
-    cyl(0.038,0.48,ms,0,-H/2+0.24,0);
-    box(0.44,0.065,0.40,ms,0,-H/2+0.50,0);
-    if(acc.SE||acc.SEO) box(0.40,0.55,0.055,ms,0,-H/2+0.83,-D/2+0.35);
-  }
-  if(acc.BUR||acc.TE||acc.TBR){
-    const md=new THREE.MeshStandardMaterial({color:strF.color,roughness:0.45,metalness:0.05});
-    const dw=acc.BUR?totW-0.25:0.50;
-    box(dw,0.038,0.44,md,0,-H/2+0.76,acc.BUR?0:0.06);
-    if(acc.BUR)[[-dw/2+0.07,0.07],[dw/2-0.07,0.07],[-dw/2+0.07,-0.32],[dw/2-0.07,-0.32]].forEach(([lx,lz])=>cyl(0.022,0.74,mStr,lx,-H/2+0.4,lz));
-  }
-  if(acc.IND){
-    const ml=new THREE.MeshStandardMaterial({color:0xfffde0,emissive:0xfffde0,emissiveIntensity:1.4,roughness:0.2});
-    box(totW-0.16,0.022,0.05,ml,0,H/2-0.14,D/2-0.1);
-    const pl=new THREE.PointLight(0xfff8cc,0.9,3.5); pl.position.set(0,H/2-0.22,D/2-0.15); group.add(pl);
-  }
-  if(acc.T||acc.O){
-    const mp=new THREE.MeshStandardMaterial({color:0xf5f5f5,roughness:0.35,metalness:0.15});
-    box(0.22,0.018,0.14,mp,totW/2-0.14,-H/2+0.98,-D/2+0.12);
-  }
-  group.position.y=0.01;
-  return group;
-}
-
-// ─── VIEWER 3D ────────────────────────────────────────────────────────────────
+// ─── VIEWER 3D (GLB) ─────────────────────────────────────────────────────────
 function Viewer3D({ modele, config }) {
-  const mountRef = useRef(null);
-  const rendRef  = useRef(null);
-  const sceneRef = useRef(null);
-  const camRef   = useRef(null);
-  const rafRef   = useRef(null);
-  const modelRef = useRef(null);
-  const drag     = useRef({active:false,x:0,y:0});
-  const rot      = useRef({x:0.28,y:0.55});
-  const zoom     = useRef(5.5);
+  const mountRef     = useRef(null);
+  const camRef       = useRef(null);
+  const materialsRef = useRef({}); // { 1: mat, 2: mat, 5: mat } — peuplé après chargement GLB
+  const sceneRef     = useRef(null);
+  const configRef    = useRef(config);
+  const drag         = useRef({active:false,x:0,y:0});
+  const rot          = useRef({x:0.28,y:0.55});
+  const zoom         = useRef(5.5);
+
+  // Garder configRef à jour pour l'appel initial depuis le callback async du loader
+  useEffect(()=>{ configRef.current=config; },[config]);
 
   const updateCam = () => {
     const r=rot.current, z=zoom.current, cam=camRef.current; if(!cam) return;
@@ -136,14 +86,39 @@ function Viewer3D({ modele, config }) {
     cam.lookAt(0,0.9,0);
   };
 
+  // Applique la config courante sur les matériaux stockés dans materialsRef
+  const applyConfig = (cfg) => {
+    const mats=materialsRef.current;
+    if(!mats[2]) return; // GLB pas encore chargé
+
+    // [1] structure → profilés
+    const fs=FINITIONS.structure.find(f=>f.label===cfg.structure)||FINITIONS.structure[0];
+    if(mats[1]){
+      console.log('applying color to material: 1', fs.color.toString(16));
+      mats[1].color.set(fs.color); mats[1].roughness=fs.roughness; mats[1].needsUpdate=true;
+    }
+
+    // [2] extérieur → revêtement
+    const fe=FINITIONS.exterieur.find(f=>f.label===cfg.exterieur)||FINITIONS.exterieur[0];
+    console.log('applying color to material: 2', fe.color.toString(16));
+    mats[2].map=null; mats[2].color.set(fe.color); mats[2].roughness=fe.roughness; mats[2].needsUpdate=true;
+
+    // [5] intérieur → paroi intérieure
+    const fi=FINITIONS.interieur.find(f=>f.label===cfg.interieur)||FINITIONS.interieur[0];
+    console.log('applying color to material: 5', fi.color.toString(16));
+    mats[5].map=null; mats[5].color.set(fi.color); mats[5].roughness=fi.roughness; mats[5].needsUpdate=true;
+  };
+
+  // Setup scène + chargement GLB (une seule fois)
   useEffect(()=>{
     const el=mountRef.current; if(!el) return;
-    const W=el.clientWidth||420, H=el.clientHeight||500;
+    const W=el.clientWidth||440, H=el.clientHeight||500;
+
     const renderer=new THREE.WebGLRenderer({antialias:true});
     renderer.setSize(W,H); renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
     renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-    renderer.outputEncoding=THREE.sRGBEncoding; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.15;
-    el.appendChild(renderer.domElement); rendRef.current=renderer;
+    renderer.outputColorSpace=THREE.SRGBColorSpace; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.15;
+    el.appendChild(renderer.domElement);
 
     const scene=new THREE.Scene(); scene.background=new THREE.Color(0xeeece8); sceneRef.current=scene;
     const cam=new THREE.PerspectiveCamera(36,W/H,0.1,100); camRef.current=cam; updateCam();
@@ -155,16 +130,43 @@ function Viewer3D({ modele, config }) {
     const floor=new THREE.Mesh(new THREE.PlaneGeometry(20,20),new THREE.MeshStandardMaterial({color:0xe2ddd7,roughness:0.92,metalness:0.02}));
     floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
 
-    const loop=()=>{ rafRef.current=requestAnimationFrame(loop); renderer.render(scene,cam); }; loop();
-    return ()=>{ cancelAnimationFrame(rafRef.current); renderer.dispose(); if(el) el.innerHTML=""; };
+    let animId;
+    const loop=()=>{ animId=requestAnimationFrame(loop); renderer.render(scene,cam); }; loop();
+
+    const loader=new GLTFLoader();
+    loader.load('/models/solo.glb', (gltf)=>{
+      const mats={};
+      // Traverser la scène et collecter les matériaux réels par index GLTF
+      // via parser.associations — évite le problème de clonage de getDependency
+      gltf.scene.traverse(n=>{
+        if(!n.isMesh) return;
+        n.castShadow=true; n.receiveShadow=true;
+        const assoc=gltf.parser.associations.get(n.material);
+        const idx=assoc?.materials;
+        console.log('mesh:', n.name, 'gltf mat index:', idx, 'map:', n.material?.map, 'color:', n.material?.color);
+        if(idx!==undefined && [1,2,5].includes(idx) && !mats[idx]) mats[idx]=n.material;
+      });
+      // Supprimer les textures de [2] et [5] pour que les couleurs soient visibles
+      if(mats[2]){ mats[2].map=null; mats[2].needsUpdate=true; }
+      if(mats[5]){ mats[5].map=null; mats[5].needsUpdate=true; }
+      materialsRef.current=mats;
+      console.log('materiaux collectés par index:', Object.keys(mats));
+
+      scene.add(gltf.scene);
+      applyConfig(configRef.current);
+    });
+
+    return ()=>{ cancelAnimationFrame(animId); renderer.dispose(); if(el) el.innerHTML=""; };
   },[]);
 
+  // Réactivité : mise à jour des matériaux à chaque changement de finition
   useEffect(()=>{
-    const scene=sceneRef.current; if(!scene||!modele) return;
-    if(modelRef.current){ scene.remove(modelRef.current); modelRef.current=null; }
-    const g=buildCabin(modele,config); modelRef.current=g; scene.add(g);
-  },[modele,config]);
+    console.log('config changed:', config.exterieur);
+    console.log('materialsRef contient:', Object.keys(materialsRef.current));
+    applyConfig(config);
+  },[config.structure,config.exterieur,config.interieur]);
 
+  // Contrôles souris / molette
   useEffect(()=>{
     const el=mountRef.current; if(!el) return;
     const onDown=e=>{drag.current={active:true,x:e.clientX,y:e.clientY}; e.preventDefault();};
@@ -210,12 +212,10 @@ function StepEntete({data,onChange,onNext}){
   </div>);
 }
 
-function StepModele({catalogue,selected,onSelect,onNext,onBack}){
-  return (<div>
-    <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>Gamme Premium</h2>
-    <p style={{fontSize:13,color:C.muted,marginBottom:18}}>Sélectionnez le modèle</p>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:24}}>
-      {Object.values(catalogue).map(m=>(
+function GammeGrid({models,selected,onSelect}){
+  return (
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+      {models.map(m=>(
         <button key={m.id} onClick={()=>onSelect(m.id)} style={{padding:"12px 8px",border:`2px solid ${selected===m.id?C.blue:C.border}`,borderRadius:10,background:selected===m.id?C.blueBg:"#fafafa",cursor:"pointer",textAlign:"center"}}>
           <div style={{fontSize:16,marginBottom:4,color:selected===m.id?C.blue:"#aaa"}}>{m.icon}</div>
           <div style={{fontSize:12,fontWeight:700,color:selected===m.id?"#1d4ed8":C.text,marginBottom:2}}>{m.label}</div>
@@ -223,6 +223,32 @@ function StepModele({catalogue,selected,onSelect,onNext,onBack}){
         </button>
       ))}
     </div>
+  );
+}
+
+function StepModele({catalogue,selected,onSelect,onNext,onBack}){
+  const all=Object.values(catalogue);
+  const premium=all.filter(m=>m.gamme==="premium");
+  const essentielle=all.filter(m=>m.gamme==="essentielle");
+  return (<div>
+    <h2 style={{fontSize:20,fontWeight:700,marginBottom:18}}>Sélectionnez le modèle</h2>
+
+    <div style={{marginBottom:20}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+        <span style={{fontSize:13,fontWeight:700,color:C.text}}>Gamme Premium</span>
+        <div style={{flex:1,height:1,background:C.border}}/>
+      </div>
+      <GammeGrid models={premium} selected={selected} onSelect={onSelect}/>
+    </div>
+
+    <div style={{marginBottom:24}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+        <span style={{fontSize:13,fontWeight:700,color:"#7c3aed"}}>Gamme Essentielle</span>
+        <div style={{flex:1,height:1,background:"#ede9fe"}}/>
+      </div>
+      <GammeGrid models={essentielle} selected={selected} onSelect={onSelect}/>
+    </div>
+
     <div style={{display:"flex",justifyContent:"space-between"}}>
       <Btn onClick={onBack} variant="secondary">← Retour</Btn>
       <Btn onClick={onNext} disabled={!selected}>Configurer →</Btn>
@@ -236,7 +262,7 @@ function StepConfig({catalogue,bareme,modeleId,config,onChange,onNext,onBack}){
   const setFond=(i,v)=>{ const f=[...(config.fonds||Array(m.paroisFond).fill(""))]; f[i]=v; onChange("fonds",f); };
   const toggleAcc=k=>onChange("accessoires",{...(config.accessoires||{}),[k]:!(config.accessoires||{})[k]});
   return (<div style={{overflowY:"auto",maxHeight:"calc(100vh - 200px)",paddingRight:4}}>
-    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><h2 style={{fontSize:20,fontWeight:700,margin:0}}>{m.label}</h2><Tag>Premium</Tag></div>
+    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><h2 style={{fontSize:20,fontWeight:700,margin:0}}>{m.label}</h2><Tag color={m.gamme==="essentielle"?"#7c3aed":C.blue}>{m.gamme==="essentielle"?"Essentielle":"Premium"}</Tag></div>
     <p style={{fontSize:13,color:C.muted,marginBottom:14}}>{m.poidsBrut} kg · {m.modules} module{m.modules>1?"s":""}</p>
     <div style={{marginBottom:16}}><PrixBar prix={prix} qty={config.quantite||1}/></div>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 20px"}}>
@@ -308,6 +334,7 @@ function StepRecap({catalogue,bareme,entete,modeleId,config,onBack,onAddProduct,
 
 function AdminView({catalogue,setCatalogue,bareme,setBareme}){
   const [tab,setTab]=useState("modeles");
+  const [filtre,setFiltre]=useState("tous");
   const [selId,setSelId]=useState(Object.keys(catalogue)[0]);
   const m=catalogue[selId];
   const upd=(f,v)=>setCatalogue(c=>({...c,[selId]:{...c[selId],[f]:v}}));
@@ -315,6 +342,7 @@ function AdminView({catalogue,setCatalogue,bareme,setBareme}){
   const addOpt=cat=>upd("options",{...m.options,[cat]:[...(m.options[cat]||[]),{label:"Nouvelle option",surcout:0}]});
   const delOpt=(cat,i)=>{ const o=[...(m.options[cat]||[])]; o.splice(i,1); upd("options",{...m.options,[cat]:o}); };
   const ts=a=>({padding:"7px 14px",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,background:a?"#1a1a1a":"#f0f0f0",color:a?"#fff":"#555"});
+  const filteredModels=Object.values(catalogue).filter(mod=>filtre==="tous"||mod.gamme===filtre);
   return (<div>
     <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>Administration</h2>
     <div style={{display:"flex",gap:8,marginBottom:18}}>
@@ -322,7 +350,14 @@ function AdminView({catalogue,setCatalogue,bareme,setBareme}){
       <button style={ts(tab==="bareme")} onClick={()=>setTab("bareme")}>Barème éco</button>
     </div>
     {tab==="modeles"&&(<div style={{display:"grid",gridTemplateColumns:"170px 1fr",gap:16}}>
-      <div>{Object.values(catalogue).map(mod=>(<button key={mod.id} onClick={()=>setSelId(mod.id)} style={{display:"block",width:"100%",textAlign:"left",padding:"8px 12px",borderRadius:8,border:`1.5px solid ${selId===mod.id?C.blue:C.border}`,background:selId===mod.id?C.blueBg:"#fafafa",marginBottom:5,cursor:"pointer",fontSize:12,fontWeight:selId===mod.id?700:400,color:selId===mod.id?"#1d4ed8":C.text}}>{mod.icon} {mod.label}</button>))}</div>
+      <div>
+        <div style={{display:"flex",gap:4,marginBottom:10}}>
+          {[["tous","Tous"],["premium","Premium"],["essentielle","Ess."]].map(([v,l])=>(
+            <button key={v} onClick={()=>setFiltre(v)} style={{flex:1,padding:"4px 0",border:`1.5px solid ${filtre===v?C.blue:C.border}`,borderRadius:6,background:filtre===v?C.blueBg:"#fafafa",color:filtre===v?"#1d4ed8":C.muted,fontSize:11,fontWeight:filtre===v?700:400,cursor:"pointer"}}>{l}</button>
+          ))}
+        </div>
+        {filteredModels.map(mod=>(<button key={mod.id} onClick={()=>setSelId(mod.id)} style={{display:"block",width:"100%",textAlign:"left",padding:"8px 12px",borderRadius:8,border:`1.5px solid ${selId===mod.id?C.blue:C.border}`,background:selId===mod.id?C.blueBg:"#fafafa",marginBottom:5,cursor:"pointer",fontSize:12,fontWeight:selId===mod.id?700:400,color:selId===mod.id?"#1d4ed8":C.text}}>{mod.icon} {mod.label}</button>))}
+      </div>
       <div style={{overflowY:"auto",maxHeight:"65vh"}}>
         <div style={{background:"#f8f8f8",borderRadius:10,padding:14,marginBottom:14}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:10}}>
