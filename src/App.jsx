@@ -62,7 +62,7 @@ export default function App() {
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:14}}>
           <div>
             <div style={{fontSize:10,fontWeight:700,color:"#aaa",textTransform:"uppercase",letterSpacing:"0.12em",marginBottom:2}}>Configurateur commande</div>
-            <h1 style={{fontSize:21,fontWeight:800,color:C.text,margin:0}}>Blabla-cube × Structa</h1>
+            <h1 style={{fontSize:21,fontWeight:800,color:C.text,margin:0}}>-Cabines × Produits complémentaires</h1>
           </div>
           <div style={{display:"flex",gap:8,alignItems:"center"}}>
             {products.length > 0 && <Tag color={C.green}>{products.length} produit{products.length > 1 ? "s" : ""}</Tag>}
