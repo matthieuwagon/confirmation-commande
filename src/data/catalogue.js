@@ -31,7 +31,8 @@ const OPTS_EMPTY = { structure:[], exterieur:[], interieur:[], fond:[], tissuInt
 
 export const CATALOGUE = {
   // ── Gamme Premium ──────────────────────────────────────────────────────────
-  SOLO:        { id:"SOLO",        gamme:"premium",     label:"Solo",           icon:"▪",   paroisFond:4, modules:1, poidsBrut:80,  prixBase:3200,  options:OPTS_FULL,  accessoires:ACC_SOLO },
+  SOLO:        { id:"SOLO",        gamme:"premium",     label:"Solo",           icon:"▪",   paroisFond:4, modules:1, poidsBrut:80,  prixBase:3200,  options:OPTS_FULL,  accessoires:ACC_SOLO,
+    glb:"/models/solo.glb", scale:0.05, meshMap:{ acc_prises:"O", acc_tablette:"T", acc_ventilation:null, porte_:false } },
   SOLO_BUREAU: { id:"SOLO_BUREAU", gamme:"premium",     label:"Solo Bureau",    icon:"▪",   paroisFond:4, modules:1, poidsBrut:95,  prixBase:3600,  options:OPTS_EMPTY, accessoires:[] },
   SOLO_FLEX:   { id:"SOLO_FLEX",   gamme:"premium",     label:"Solo Flex",      icon:"▪",   paroisFond:4, modules:1, poidsBrut:88,  prixBase:3400,  options:OPTS_EMPTY, accessoires:[] },
   DUO:         { id:"DUO",         gamme:"premium",     label:"Duo",            icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:145, prixBase:5200,  options:OPTS_EMPTY, accessoires:[] },
@@ -40,7 +41,8 @@ export const CATALOGUE = {
   XL_2MOD:     { id:"XL_2MOD",    gamme:"premium",     label:"XL (2 modules)", icon:"▬▬",  paroisFond:6, modules:2, poidsBrut:310, prixBase:11500, options:OPTS_EMPTY, accessoires:[] },
   XL_3MOD:     { id:"XL_3MOD",    gamme:"premium",     label:"XL (3 modules)", icon:"▬▬▬", paroisFond:8, modules:3, poidsBrut:420, prixBase:15800, options:OPTS_EMPTY, accessoires:[] },
   // ── Gamme Essentielle ──────────────────────────────────────────────────────
-  ESS_SOLO:    { id:"ESS_SOLO",    gamme:"essentielle", label:"Solo Essentiel",    icon:"▪",   paroisFond:4, modules:1, poidsBrut:65,  prixBase:2200, options:OPTS_FULL,  accessoires:ACC_SOLO },
+  ESS_SOLO:    { id:"ESS_SOLO",    gamme:"essentielle", label:"Solo Essentiel",    icon:"▪",   paroisFond:4, modules:1, poidsBrut:65,  prixBase:2200, options:OPTS_FULL,  accessoires:ACC_SOLO,
+    glb:"/models/solo-old.glb", scale:0.05, meshMap:{ acc_prises:"O", acc_tablette:"T", acc_ventilation:null, porte_:false } },
   ESS_DUO:     { id:"ESS_DUO",    gamme:"essentielle", label:"Duo Essentiel",     icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:120, prixBase:3800, options:OPTS_EMPTY, accessoires:[] },
   ESS_QUATTRO: { id:"ESS_QUATTRO",gamme:"essentielle", label:"Quattro Essentiel", icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:160, prixBase:5000, options:OPTS_EMPTY, accessoires:[] },
   ESS_SIXO:    { id:"ESS_SIXO",   gamme:"essentielle", label:"Sixo Essentiel",    icon:"▪▪▪", paroisFond:4, modules:3, poidsBrut:190, prixBase:6200, options:OPTS_EMPTY, accessoires:[] },

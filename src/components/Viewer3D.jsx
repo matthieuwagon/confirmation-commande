@@ -8,13 +8,16 @@ export default function Viewer3D({ modele, config }) {
   const mountRef     = useRef(null);
   const camRef       = useRef(null);
   const materialsRef = useRef({});
+  const meshesRef    = useRef({});
   const sceneRef     = useRef(null);
   const configRef    = useRef(config);
+  const modeleRef    = useRef(modele);
   const drag         = useRef({ active:false, x:0, y:0 });
   const rot          = useRef({ x:0.28, y:0.55 });
   const zoom         = useRef(5.5);
 
   useEffect(() => { configRef.current = config; }, [config]);
+  useEffect(() => { modeleRef.current = modele; }, [modele]);
 
   const updateCam = () => {
     const r = rot.current, z = zoom.current, cam = camRef.current;
@@ -41,7 +44,18 @@ export default function Viewer3D({ modele, config }) {
     mats[5].map = null; mats[5].color.set(fi.color); mats[5].roughness = fi.roughness; mats[5].needsUpdate = true;
   };
 
-  // Setup scène + chargement GLB (une seule fois)
+  const applyAccessoires = (cfg, mod) => {
+    const meshes = meshesRef.current;
+    const meshMap = mod?.meshMap || {};
+    Object.entries(meshMap).forEach(([meshName, key]) => {
+      const mesh = meshes[meshName];
+      if (!mesh) return;
+      if (key === null || key === false) { mesh.visible = false; return; }
+      mesh.visible = !!(cfg.accessoires?.[key]);
+    });
+  };
+
+  // Setup scène Three.js (une seule fois)
   useEffect(() => {
     const el = mountRef.current; if (!el) return;
     const W = el.clientWidth || 440, H = el.clientHeight || 500;
@@ -78,12 +92,27 @@ export default function Viewer3D({ modele, config }) {
     const loop = () => { animId = requestAnimationFrame(loop); renderer.render(scene, cam); };
     loop();
 
+    return () => { cancelAnimationFrame(animId); renderer.dispose(); if (el) el.innerHTML = ""; };
+  }, []);
+
+  // Chargement GLB — se relance quand le modèle change
+  useEffect(() => {
+    const scene = sceneRef.current; if (!scene || !modele?.glb) return;
+
+    // Supprimer l'ancien modèle chargé
+    const old = scene.getObjectByName("__model__");
+    if (old) scene.remove(old);
+    materialsRef.current = {};
+    meshesRef.current = {};
+
     const loader = new GLTFLoader();
-    loader.load('/models/solo.glb', (gltf) => {
+    loader.load(modele.glb, (gltf) => {
       const mats = {};
+      const meshes = {};
       gltf.scene.traverse(n => {
         if (!n.isMesh) return;
         n.castShadow = true; n.receiveShadow = true;
+        if (n.name in modele.meshMap) meshes[n.name] = n;
         const assoc = gltf.parser.associations.get(n.material);
         const idx = assoc?.materials;
         if (idx !== undefined && [1, 2, 5].includes(idx) && !mats[idx]) mats[idx] = n.material;
@@ -91,17 +120,20 @@ export default function Viewer3D({ modele, config }) {
       if (mats[2]) { mats[2].map = null; mats[2].needsUpdate = true; }
       if (mats[5]) { mats[5].map = null; mats[5].needsUpdate = true; }
       materialsRef.current = mats;
+      meshesRef.current = meshes;
+      gltf.scene.name = "__model__";
+      gltf.scene.scale.setScalar(modele.scale ?? 1);
       scene.add(gltf.scene);
       applyConfig(configRef.current);
+      applyAccessoires(configRef.current, modeleRef.current);
     });
+  }, [modele?.glb]);
 
-    return () => { cancelAnimationFrame(animId); renderer.dispose(); if (el) el.innerHTML = ""; };
-  }, []);
+  // Réactivité : finitions
+  useEffect(() => { applyConfig(config); }, [config.structure, config.exterieur, config.interieur]);
 
-  // Réactivité : mise à jour des matériaux à chaque changement de finition
-  useEffect(() => {
-    applyConfig(config);
-  }, [config.structure, config.exterieur, config.interieur]);
+  // Réactivité : accessoires
+  useEffect(() => { applyAccessoires(config, modele); }, [config.accessoires]);
 
   // Contrôles souris / molette
   useEffect(() => {
