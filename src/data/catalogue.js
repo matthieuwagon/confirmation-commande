@@ -32,7 +32,7 @@ const OPTS_EMPTY = { structure:[], exterieur:[], interieur:[], fond:[], tissuInt
 export const CATALOGUE = {
   // ── Gamme Premium ──────────────────────────────────────────────────────────
   SOLO:        { id:"SOLO",        gamme:"premium",     label:"Solo",           icon:"▪",   paroisFond:4, modules:1, poidsBrut:80,  prixBase:3200,  options:OPTS_FULL,  accessoires:ACC_SOLO,
-    glb:"/models/solo.glb", scale:0.05, meshMap:{ acc_prises:"O", acc_tablette:"T", acc_ventilation:null, porte_:false } },
+    glb:"/models/solo-old.glb", scale:0.05, meshMap:{ acc_prises:"O", acc_tablette:"T", acc_ventilation:null, porte_:false } },
   SOLO_BUREAU: { id:"SOLO_BUREAU", gamme:"premium",     label:"Solo Bureau",    icon:"▪",   paroisFond:4, modules:1, poidsBrut:95,  prixBase:3600,  options:OPTS_EMPTY, accessoires:[] },
   SOLO_FLEX:   { id:"SOLO_FLEX",   gamme:"premium",     label:"Solo Flex",      icon:"▪",   paroisFond:4, modules:1, poidsBrut:88,  prixBase:3400,  options:OPTS_EMPTY, accessoires:[] },
   DUO:         { id:"DUO",         gamme:"premium",     label:"Duo",            icon:"▪▪",  paroisFond:4, modules:2, poidsBrut:145, prixBase:5200,  options:OPTS_EMPTY, accessoires:[] },
