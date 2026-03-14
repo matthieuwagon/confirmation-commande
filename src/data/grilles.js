@@ -395,13 +395,14 @@ export const GRILLE_PAR_ANNEE = { 2025: G2025, 2026: G2026 };
 export const ANNEES_DISPONIBLES = [2025, 2026];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// applyGrille : injecte les prix de l'année dans la structure du catalogue
-// Retourne un nouveau catalogue enrichi — les composants n'ont pas besoin de changer.
-export function applyGrille(catalogue, annee) {
-  const grille = GRILLE_PAR_ANNEE[annee] ?? GRILLE_PAR_ANNEE[2026];
+// applyGrille : injecte les prix d'une grille dans la structure du catalogue.
+// grilleData = objet { SOLO:{prixBase, options, ...}, DUO:{...}, ... }
+// (= GRILLE_PAR_ANNEE[annee] stocké dans l'état App)
+export function applyGrille(catalogue, grilleData) {
+  const grille = grilleData ?? {};
   const result = {};
   for (const [id, modele] of Object.entries(catalogue)) {
-    const g = grille[id] ?? {};
+    const g = grille?.[id] ?? {};
     const optPrices = g.options    ?? {};
     const accPrices = g.accessoires ?? {};
 

@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { CATALOGUE } from "./data/catalogue.js";
-import { applyGrille, ANNEES_DISPONIBLES } from "./data/grilles.js";
+import { applyGrille, ANNEES_DISPONIBLES, GRILLE_PAR_ANNEE } from "./data/grilles.js";
 import { calcPrix } from "./lib/pricing.js";
 import { C, Tag, StepDot } from "./components/ui/atoms.jsx";
 import Viewer3D    from "./components/Viewer3D.jsx";
@@ -17,11 +17,16 @@ export default function App() {
   const [mode,      setMode]      = useState("config");
   const [step,      setStep]      = useState(0);
   const [catalogue, setCatalogue] = useState(CATALOGUE);
+  const [grille,    setGrille]    = useState(GRILLE_PAR_ANNEE);
   const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commercial:"", revendeur:"", agentCo:"", cdeClient:"", contactClient:"", remiseAgco:"", dateLivraison:"", commentaire:"", formule:"", departement:"", annee: new Date().getFullYear() });
 
+  const grilleAnnee = grille[entete.annee] ?? grille[2026];
+  const setGrilleAnnee = useCallback((annee, data) =>
+    setGrille(g => ({ ...g, [annee]: data })), []);
+
   const catalogueAvecPrix = useMemo(
-    () => applyGrille(catalogue, entete.annee),
-    [catalogue, entete.annee]
+    () => applyGrille(catalogue, grilleAnnee),
+    [catalogue, grilleAnnee]
   );
   const [modeleId,  setModeleId]  = useState("");
   const [config,    setConfig]    = useState({ quantite:1, accessoires:{}, fonds:[], configuration:"", structure:"", exterieur:"", interieur:"", fond:"", habillage:"", banquette:"", panneaux:"", moquette:"", prise:"", ecran:"", commentaire:"" });
@@ -101,7 +106,7 @@ export default function App() {
         <div style={{display:"grid",gridTemplateColumns:show3D ? "1fr 440px" : "1fr",gap:14,alignItems:"start"}}>
           <div style={{background:C.card,borderRadius:14,padding:26,boxShadow:"0 2px 10px rgba(0,0,0,0.06)"}}>
             {mode === "admin"
-              ? <AdminView catalogue={catalogue} setCatalogue={setCatalogue}/>
+              ? <AdminView catalogue={catalogue} setCatalogue={setCatalogue} catalogueAvecPrix={catalogueAvecPrix} grilleAnnee={grilleAnnee} setGrilleAnnee={d => setGrilleAnnee(entete.annee, d)} annee={entete.annee}/>
               : <>
                   {step === 0 && <StepEntete data={entete} onChange={setE} onNext={() => setStep(1)} annees={ANNEES_DISPONIBLES}/>}
                   {step === 1 && <StepModele catalogue={catalogueAvecPrix} selected={modeleId} onSelect={handleSelect} onNext={() => setStep(2)} onBack={() => setStep(0)}/>}
