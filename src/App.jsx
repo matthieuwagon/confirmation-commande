@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { CATALOGUE } from "./data/catalogue.js";
+import { applyGrille, ANNEES_DISPONIBLES } from "./data/grilles.js";
 import { calcPrix } from "./lib/pricing.js";
 import { C, Tag, StepDot } from "./components/ui/atoms.jsx";
 import Viewer3D    from "./components/Viewer3D.jsx";
@@ -16,7 +17,12 @@ export default function App() {
   const [mode,      setMode]      = useState("config");
   const [step,      setStep]      = useState(0);
   const [catalogue, setCatalogue] = useState(CATALOGUE);
-const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commercial:"", revendeur:"", agentCo:"", cdeClient:"", contactClient:"", remiseAgco:"", dateLivraison:"", commentaire:"", formule:"", departement:"" });
+  const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commercial:"", revendeur:"", agentCo:"", cdeClient:"", contactClient:"", remiseAgco:"", dateLivraison:"", commentaire:"", formule:"", departement:"", annee: new Date().getFullYear() });
+
+  const catalogueAvecPrix = useMemo(
+    () => applyGrille(catalogue, entete.annee),
+    [catalogue, entete.annee]
+  );
   const [modeleId,  setModeleId]  = useState("");
   const [config,    setConfig]    = useState({ quantite:1, accessoires:{}, fonds:[], configuration:"", structure:"", exterieur:"", interieur:"", fond:"", habillage:"", banquette:"", panneaux:"", moquette:"", prise:"", ecran:"", commentaire:"" });
   const [products,  setProducts]  = useState([]);
@@ -25,13 +31,13 @@ const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commer
   const setC = useCallback((k, v) => setConfig(c  => ({ ...c, [k]:v })), []);
 
   const handleSelect = id => {
-    const m = catalogue[id];
+    const m = catalogueAvecPrix[id];
     setModeleId(id);
     setConfig({ quantite:1, accessoires:{}, fonds:Array(m.paroisFond).fill(""), configuration:m.configurations?.[0]?.label||"", structure:"", exterieur:"", interieur:"", fond:"", habillage:"", banquette:"", panneaux:"", moquette:"", prise:"", ecran:"", commentaire:"" });
   };
 
   const handleAdd = () => {
-    const m = catalogue[modeleId];
+    const m = catalogueAvecPrix[modeleId];
     const p = calcPrix(m, config);
     setProducts(pr => [...pr, {
       modeleId,
@@ -97,16 +103,16 @@ const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commer
             {mode === "admin"
               ? <AdminView catalogue={catalogue} setCatalogue={setCatalogue}/>
               : <>
-                  {step === 0 && <StepEntete data={entete} onChange={setE} onNext={() => setStep(1)}/>}
-                  {step === 1 && <StepModele catalogue={catalogue} selected={modeleId} onSelect={handleSelect} onNext={() => setStep(2)} onBack={() => setStep(0)}/>}
-                  {step === 2 && modeleId && <StepConfig catalogue={catalogue} modeleId={modeleId} config={config} onChange={setC} onNext={() => setStep(3)} onBack={() => setStep(1)}/>}
-                  {step === 3 && <StepRecap catalogue={catalogue} entete={entete} modeleId={modeleId} config={config} onBack={() => setStep(2)} onAddProduct={handleAdd} products={products}/>}
+                  {step === 0 && <StepEntete data={entete} onChange={setE} onNext={() => setStep(1)} annees={ANNEES_DISPONIBLES}/>}
+                  {step === 1 && <StepModele catalogue={catalogueAvecPrix} selected={modeleId} onSelect={handleSelect} onNext={() => setStep(2)} onBack={() => setStep(0)}/>}
+                  {step === 2 && modeleId && <StepConfig catalogue={catalogueAvecPrix} modeleId={modeleId} config={config} onChange={setC} onNext={() => setStep(3)} onBack={() => setStep(1)}/>}
+                  {step === 3 && <StepRecap catalogue={catalogueAvecPrix} entete={entete} modeleId={modeleId} config={config} onBack={() => setStep(2)} onAddProduct={handleAdd} products={products}/>}
                 </>
             }
           </div>
           {show3D && (
             <div style={{position:"sticky",top:16,height:500,background:C.card,borderRadius:14,boxShadow:"0 2px 10px rgba(0,0,0,0.06)",overflow:"hidden"}}>
-              <Viewer3D modele={catalogue[modeleId]} config={config}/>
+              <Viewer3D modele={catalogueAvecPrix[modeleId]} config={config}/>
             </div>
           )}
         </div>

@@ -1,7 +1,7 @@
 import { C, inp, Field, Sel, Btn } from "../ui/atoms.jsx";
 import { COMMERCIAUX, REVENDEURS } from "../../data/catalogue.js";
 
-export default function StepEntete({ data, onChange, onNext }) {
+export default function StepEntete({ data, onChange, onNext, annees = [] }) {
   const ok = data.chantier && data.clientFinal && data.commercial && data.revendeur;
   return (
     <div>
@@ -17,6 +17,9 @@ export default function StepEntete({ data, onChange, onNext }) {
         <Field label="Agent co."><input value={data.agentCo} onChange={e => onChange("agentCo", e.target.value)} style={inp} placeholder="Nom de l'agent"/></Field>
         <Field label="Remise (%)"><input type="number" min="0" max="100" step="0.5" value={data.remiseAgco} onChange={e => onChange("remiseAgco", e.target.value)} style={{...inp,width:100}} placeholder="0"/></Field>
         <Field label="Date livraison"><input type="date" value={data.dateLivraison} onChange={e => onChange("dateLivraison", e.target.value)} style={inp}/></Field>
+        <Field label="Tarif année">
+          <Sel value={String(data.annee)} onChange={v => onChange("annee", Number(v))} options={annees.map(String)}/>
+        </Field>
         <Field label="Formule logistique">
           <Sel value={data.formule||""} onChange={v => onChange("formule", v)} options={["ECO","SERENITE","CONFORT"]}/>
         </Field>
