@@ -1,8 +1,8 @@
 import { C, inp, Field, Sel, Btn } from "../ui/atoms.jsx";
-import { COMMERCIAUX } from "../../data/catalogue.js";
+import { COMMERCIAUX, REVENDEURS } from "../../data/catalogue.js";
 
 export default function StepEntete({ data, onChange, onNext }) {
-  const ok = data.chantier && data.clientFinal && data.commercial && data.agentCo;
+  const ok = data.chantier && data.clientFinal && data.commercial && data.revendeur;
   return (
     <div>
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>En-tête de commande</h2>
@@ -13,7 +13,8 @@ export default function StepEntete({ data, onChange, onNext }) {
         <Field label="Client final" required><input value={data.clientFinal} onChange={e => onChange("clientFinal",  e.target.value)} style={inp} placeholder="Entreprise"/></Field>
         <Field label="Contact">           <input value={data.contactClient}  onChange={e => onChange("contactClient", e.target.value)} style={inp} placeholder="Prénom Nom"/></Field>
         <Field label="Commercial" required><Sel value={data.commercial} onChange={v => onChange("commercial", v)} options={COMMERCIAUX}/></Field>
-        <Field label="Agent co." required><input value={data.agentCo}        onChange={e => onChange("agentCo",       e.target.value)} style={inp} placeholder="Nom de l'agent"/></Field>
+        <Field label="Revendeur" required><Sel value={data.revendeur} onChange={v => onChange("revendeur", v)} options={REVENDEURS}/></Field>
+        <Field label="Agent co."><input value={data.agentCo} onChange={e => onChange("agentCo", e.target.value)} style={inp} placeholder="Nom de l'agent"/></Field>
         <Field label="Remise agent (%)"><input type="number" min="0" max="100" value={data.remiseAgco} onChange={e => onChange("remiseAgco", e.target.value)} style={{...inp,width:100}} placeholder="0"/></Field>
         <Field label="Date livraison"><input type="date" value={data.dateLivraison} onChange={e => onChange("dateLivraison", e.target.value)} style={inp}/></Field>
       </div>

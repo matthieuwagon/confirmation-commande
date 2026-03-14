@@ -16,7 +16,7 @@ export default function App() {
   const [mode,      setMode]      = useState("config");
   const [step,      setStep]      = useState(0);
   const [catalogue, setCatalogue] = useState(CATALOGUE);
-const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commercial:"", agentCo:"", cdeClient:"", contactClient:"", remiseAgco:"", dateLivraison:"", commentaire:"" });
+const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commercial:"", revendeur:"", agentCo:"", cdeClient:"", contactClient:"", remiseAgco:"", dateLivraison:"", commentaire:"" });
   const [modeleId,  setModeleId]  = useState("");
   const [config,    setConfig]    = useState({ quantite:1, accessoires:{}, fonds:[] });
   const [products,  setProducts]  = useState([]);
