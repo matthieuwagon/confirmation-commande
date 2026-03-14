@@ -63,9 +63,10 @@ const A_PMR       = { key:"pmr",       label:"Accès PMR"            };
 const A_TABLE_XL  = { key:"table_xl",  label:"Table de réunion"     };
 
 // ── Configurations — labels uniquement (sans prix) ────────────────────────────
-const CFG_DUO     = ["Base", "Vide", "Haute", "Individuel", "Ouverte", "Visio"];
-const CFG_QUATTRO = ["Base", "Vide", "Haute", "Individuel", "Ouverte", "Visio"];
-const CFG_SIXO    = ["Base", "Visio"];
+const CFG_DUO          = ["Base", "Vide", "Haute", "Individuel", "Ouverte", "Visio"];
+const CFG_QUATTRO      = ["Base", "Vide", "Haute", "Individuel", "Ouverte", "Visio"];
+const CFG_SIXO         = ["Base", "Visio"];
+const CFG_INDUS_QUATTRO = ["Base", "Chef Atelier"];
 
 // ── Catalogue ─────────────────────────────────────────────────────────────────
 // NB : aucun prix ici — tout est dans src/data/grilles.js
@@ -73,7 +74,7 @@ export const CATALOGUE = {
   // ── Gamme Premium ────────────────────────────────────────────────────────────
   SOLO: { id:"SOLO", gamme:"premium", label:"Solo", icon:"▪", paroisFond:4, modules:1, poidsEco:310,
     configurations: null,
-    options:{ structure:STRUCTURE, exterieur:EXTERIEUR, interieur:INTERIEUR, fond:FOND_SOLO, habillage:HAB_SD, banquette:null, panneaux:PAN_S, moquette:MOQ_S, prise:PRISE_PRE, ecran:ECRAN_SOLO_B },
+    options:{ structure:STRUCTURE, exterieur:EXTERIEUR, interieur:INTERIEUR, fond:FOND_SOLO, habillage:HAB_SD, banquette:null, panneaux:PAN_S, moquette:MOQ_S, prise:PRISE_PRE, ecran:null },
     accessoires:[A_SIGNAL, A_ECRITOIRE, A_INDUCTION, A_TABOURET],
     glb:"/models/solo.glb", scale:0.05, meshMap:{acc_prises:"O",acc_tablette:"T",acc_ventilation:null,porte_:false} },
 
@@ -140,19 +141,19 @@ export const CATALOGUE = {
     accessoires:[] },
 
   // ── Gamme Indus ───────────────────────────────────────────────────────────────
-  INDUS_SOLO: { id:"INDUS_SOLO", gamme:"indus", label:"Indus Solo", icon:"▪", paroisFond:4, modules:1, poidsEco:310,
+  INDUS_SOLO: { id:"INDUS_SOLO", gamme:"indus", label:"Indus Solo", icon:"▪", paroisFond:4, modules:1, poidsEco:250,
     configurations: null,
     options:{ structure:STRUCTURE, exterieur:EXTERIEUR, interieur:INTERIEUR, fond:FOND_SOLO, habillage:null, banquette:null, panneaux:null, moquette:null, prise:PRISE_PRE, ecran:null },
     accessoires:[] },
 
-  INDUS_DUO: { id:"INDUS_DUO", gamme:"indus", label:"Indus Duo", icon:"▪▪", paroisFond:4, modules:2, poidsEco:505,
+  INDUS_DUO: { id:"INDUS_DUO", gamme:"indus", label:"Indus Duo", icon:"▪▪", paroisFond:4, modules:2, poidsEco:670,
     configurations: null,
-    options:{ structure:STRUCTURE, exterieur:EXTERIEUR, interieur:INTERIEUR, fond:FOND_DUO, habillage:null, banquette:null, panneaux:null, moquette:null, prise:PRISE_PRE, ecran:null },
+    options:{ structure:STRUCTURE, exterieur:EXTERIEUR, interieur:INTERIEUR, fond:FOND_DUO, habillage:null, banquette:null, panneaux:null, moquette:null, prise:PRISE_PRE, ecran:ECRAN_MULTI },
     accessoires:[] },
 
-  INDUS_QUATTRO: { id:"INDUS_QUATTRO", gamme:"indus", label:"Indus Quattro", icon:"▪▪", paroisFond:4, modules:2, poidsEco:635,
-    configurations: null,
-    options:{ structure:STRUCTURE, exterieur:EXTERIEUR, interieur:INTERIEUR, fond:FOND_DUO, habillage:null, banquette:null, panneaux:null, moquette:null, prise:PRISE_PRE, ecran:null },
+  INDUS_QUATTRO: { id:"INDUS_QUATTRO", gamme:"indus", label:"Indus Quattro", icon:"▪▪", paroisFond:4, modules:2, poidsEco:715,
+    configurations: CFG_INDUS_QUATTRO,
+    options:{ structure:STRUCTURE, exterieur:EXTERIEUR, interieur:INTERIEUR, fond:FOND_DUO, habillage:null, banquette:null, panneaux:null, moquette:null, prise:PRISE_PRE, ecran:ECRAN_MULTI },
     accessoires:[] },
 };
 
