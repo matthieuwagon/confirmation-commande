@@ -2,9 +2,9 @@ import { C, inp, Field, Sel, Check, Btn, Tag, PrixBar } from "../ui/atoms.jsx";
 import { OPTION_LABELS } from "../../data/catalogue.js";
 import { calcPrix } from "../../lib/pricing.js";
 
-export default function StepConfig({ catalogue, bareme, modeleId, config, onChange, onNext, onBack }) {
+export default function StepConfig({ catalogue, modeleId, config, onChange, onNext, onBack }) {
   const m = catalogue[modeleId]; if (!m) return null;
-  const prix = calcPrix(m, config, bareme);
+  const prix = calcPrix(m, config);
   const setFond     = (i, v) => { const f = [...(config.fonds || Array(m.paroisFond).fill(""))]; f[i] = v; onChange("fonds", f); };
   const toggleAcc   = k => onChange("accessoires", { ...(config.accessoires || {}), [k]: !(config.accessoires || {})[k] });
 
@@ -16,7 +16,7 @@ export default function StepConfig({ catalogue, bareme, modeleId, config, onChan
           {m.gamme === "essentielle" ? "Essentielle" : "Premium"}
         </Tag>
       </div>
-      <p style={{fontSize:13,color:C.muted,marginBottom:14}}>{m.poidsBrut} kg · {m.modules} module{m.modules > 1 ? "s" : ""}</p>
+      <p style={{fontSize:13,color:C.muted,marginBottom:14}}>{m.poidsEco} kg ECO · {m.modules} module{m.modules > 1 ? "s" : ""}</p>
       <div style={{marginBottom:16}}><PrixBar prix={prix} qty={config.quantite || 1}/></div>
 
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 20px"}}>

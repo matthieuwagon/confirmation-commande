@@ -1,8 +1,8 @@
 import { C, Btn, Tag } from "../ui/atoms.jsx";
 import { calcPrix } from "../../lib/pricing.js";
 
-function buildLine(modele, config, bareme) {
-  const p = calcPrix(modele, config, bareme);
+function buildLine(modele, config) {
+  const p = calcPrix(modele, config);
   return {
     MODELE:          modele?.label,
     QUANTITE:        config.quantite || 1,
@@ -19,9 +19,9 @@ function buildLine(modele, config, bareme) {
   };
 }
 
-export default function StepRecap({ catalogue, bareme, entete, modeleId, config, onBack, onAddProduct, products }) {
+export default function StepRecap({ catalogue, entete, modeleId, config, onBack, onAddProduct, products }) {
   const m = catalogue[modeleId];
-  const cur = buildLine(m, config, bareme);
+  const cur = buildLine(m, config);
   const all = [...products, cur];
   const grand = all.reduce((s, l) => s + (l._p?.total || 0), 0);
 
