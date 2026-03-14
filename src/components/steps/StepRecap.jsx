@@ -1,6 +1,6 @@
 import { C, Btn, Tag } from "../ui/atoms.jsx";
 import { calcPrix } from "../../lib/pricing.js";
-import { calcLivraisonSerenite, calcRemise } from "../../lib/logistics.js";
+import { calcLivraisonSerenite, calcLivraisonConfort, calcRemise } from "../../lib/logistics.js";
 
 function buildLine(catalogue, modeleId, config) {
   const modele = catalogue[modeleId];
@@ -64,8 +64,16 @@ export default function StepRecap({ catalogue, entete, modeleId, config, onBack,
     } else {
       livraisonLabel = "Département non trouvé";
     }
+  } else if (formule === "CONFORT" && entete.departement) {
+    const calc = calcLivraisonConfort(all, entete.departement);
+    if (calc !== null) {
+      livraison = calc;
+      livraisonLabel = `Confort — Dept. ${entete.departement}`;
+    } else {
+      livraisonLabel = "Confort — sur devis (SIXO/dept inconnu)";
+    }
   } else if (formule === "CONFORT") {
-    livraisonLabel = "Confort — sur devis";
+    livraisonLabel = "Confort — département requis";
   }
 
   // Remise
@@ -135,7 +143,7 @@ export default function StepRecap({ catalogue, entete, modeleId, config, onBack,
         {formule && (
           <div style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:13,borderBottom:`1px solid ${C.border}`}}>
             <span style={{color:C.muted}}>Livraison — {livraisonLabel}</span>
-            <span style={{fontWeight:600}}>{formule === "CONFORT" ? "sur devis" : livraison.toLocaleString("fr-FR") + " €"}</span>
+            <span style={{fontWeight:600}}>{livraison > 0 || formule === "ECO" ? livraison.toLocaleString("fr-FR") + " €" : "sur devis"}</span>
           </div>
         )}
 
