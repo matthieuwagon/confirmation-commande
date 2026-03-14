@@ -18,25 +18,24 @@ export default function StepModele({ catalogue, selected, onSelect, onNext, onBa
   const all = Object.values(catalogue);
   const premium     = all.filter(m => m.gamme === "premium");
   const essentielle = all.filter(m => m.gamme === "essentielle");
+  const indus       = all.filter(m => m.gamme === "indus");
+
+  const GammeSection = ({ label, color, border, models }) => (
+    <div style={{marginBottom:20}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+        <span style={{fontSize:13,fontWeight:700,color}}>{label}</span>
+        <div style={{flex:1,height:1,background:border}}/>
+      </div>
+      <GammeGrid models={models} selected={selected} onSelect={onSelect}/>
+    </div>
+  );
+
   return (
     <div>
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:18}}>Sélectionnez le modèle</h2>
-
-      <div style={{marginBottom:20}}>
-        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-          <span style={{fontSize:13,fontWeight:700,color:C.text}}>Gamme Premium</span>
-          <div style={{flex:1,height:1,background:C.border}}/>
-        </div>
-        <GammeGrid models={premium} selected={selected} onSelect={onSelect}/>
-      </div>
-
-      <div style={{marginBottom:24}}>
-        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-          <span style={{fontSize:13,fontWeight:700,color:"#7c3aed"}}>Gamme Essentielle</span>
-          <div style={{flex:1,height:1,background:"#ede9fe"}}/>
-        </div>
-        <GammeGrid models={essentielle} selected={selected} onSelect={onSelect}/>
-      </div>
+      <GammeSection label="Gamme Premium"     color={C.text}    border={C.border}   models={premium}/>
+      <GammeSection label="Gamme Essentielle" color="#7c3aed"   border="#ede9fe"    models={essentielle}/>
+      <GammeSection label="Gamme Indus"       color="#b45309"   border="#fef3c7"    models={indus}/>
 
       <div style={{display:"flex",justifyContent:"space-between"}}>
         <Btn onClick={onBack} variant="secondary">← Retour</Btn>

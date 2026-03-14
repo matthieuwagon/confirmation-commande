@@ -16,7 +16,7 @@ export default function App() {
   const [mode,      setMode]      = useState("config");
   const [step,      setStep]      = useState(0);
   const [catalogue, setCatalogue] = useState(CATALOGUE);
-const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commercial:"", revendeur:"", agentCo:"", cdeClient:"", contactClient:"", remiseAgco:"", dateLivraison:"", commentaire:"" });
+const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commercial:"", revendeur:"", agentCo:"", cdeClient:"", contactClient:"", remiseAgco:"", dateLivraison:"", commentaire:"", formule:"", departement:"" });
   const [modeleId,  setModeleId]  = useState("");
   const [config,    setConfig]    = useState({ quantite:1, accessoires:{}, fonds:[], configuration:"", structure:"", exterieur:"", interieur:"", fond:"", habillage:"", banquette:"", panneaux:"", moquette:"", prise:"", ecran:"", commentaire:"" });
   const [products,  setProducts]  = useState([]);
@@ -34,6 +34,8 @@ const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commer
     const m = catalogue[modeleId];
     const p = calcPrix(m, config);
     setProducts(pr => [...pr, {
+      modeleId,
+      quantite:         config.quantite || 1,
       MODELE:           m?.label,
       GAMME:            m?.gamme,
       CONFIGURATION:    config.configuration || "",
