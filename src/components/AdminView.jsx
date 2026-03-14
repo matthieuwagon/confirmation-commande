@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { C, inp, Field, Btn } from "./ui/atoms.jsx";
-import { OPTION_LABELS } from "../data/catalogue.js";
+import { FINITION_LABELS, OPTION_LABELS } from "../data/catalogue.js";
+const ALL_OPTION_LABELS = { ...FINITION_LABELS, ...OPTION_LABELS };
 
 export default function AdminView({ catalogue, setCatalogue }) {
   const [tab,    setTab]    = useState("modeles");
@@ -55,7 +56,7 @@ export default function AdminView({ catalogue, setCatalogue }) {
               </div>
             </div>
 
-            {Object.entries(OPTION_LABELS).map(([cat, lbl]) => (
+            {Object.entries(ALL_OPTION_LABELS).map(([cat, lbl]) => (
               <div key={cat} style={{marginBottom:12,border:`1.5px solid ${C.border}`,borderRadius:10,overflow:"hidden"}}>
                 <div style={{background:"#f8f8f8",padding:"8px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <span style={{fontSize:11,fontWeight:700,textTransform:"uppercase",color:"#555"}}>{lbl}</span>

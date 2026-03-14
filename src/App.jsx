@@ -18,7 +18,7 @@ export default function App() {
   const [catalogue, setCatalogue] = useState(CATALOGUE);
 const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commercial:"", revendeur:"", agentCo:"", cdeClient:"", contactClient:"", remiseAgco:"", dateLivraison:"", commentaire:"" });
   const [modeleId,  setModeleId]  = useState("");
-  const [config,    setConfig]    = useState({ quantite:1, accessoires:{}, fonds:[] });
+  const [config,    setConfig]    = useState({ quantite:1, accessoires:{}, fonds:[], configuration:"", structure:"", exterieur:"", interieur:"", fond:"", habillage:"", banquette:"", panneaux:"", moquette:"", prise:"", ecran:"", commentaire:"" });
   const [products,  setProducts]  = useState([]);
 
   const setE = useCallback((k, v) => setEntete(e => ({ ...e, [k]:v })), []);
@@ -27,7 +27,7 @@ const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commer
   const handleSelect = id => {
     const m = catalogue[id];
     setModeleId(id);
-    setConfig(c => ({ ...c, fonds:Array(m.paroisFond).fill("") }));
+    setConfig({ quantite:1, accessoires:{}, fonds:Array(m.paroisFond).fill(""), configuration:m.configurations?.[0]?.label||"", structure:"", exterieur:"", interieur:"", fond:"", habillage:"", banquette:"", panneaux:"", moquette:"", prise:"", ecran:"", commentaire:"" });
   };
 
   const handleAdd = () => {
@@ -35,20 +35,28 @@ const [entete,    setEntete]    = useState({ chantier:"", clientFinal:"", commer
     const p = calcPrix(m, config);
     setProducts(pr => [...pr, {
       MODELE:           m?.label,
+      GAMME:            m?.gamme,
+      CONFIGURATION:    config.configuration || "",
       QUANTITE:         config.quantite || 1,
       STRUCTURE:        config.structure || "",
       EXTERIEUR:        config.exterieur || "",
       INTERIEUR:        config.interieur || "",
-      FOND:             (config.fonds || []).join(" | "),
-      TISSU:            config.tissuInterieur || "",
-      ACCESSOIRES:      m ? m.accessoires.filter(a => (config.accessoires || {})[a.key]).map(a => a.label).join(", ") : "",
+      FOND:             (config.fonds || []).join(" | ") || config.fond || "",
+      HABILLAGE:        config.habillage || "",
+      BANQUETTE:        config.banquette || "",
+      PANNEAUX:         config.panneaux || "",
+      MOQUETTE:         config.moquette || "",
+      PRISE:            config.prise || "",
+      ECRAN:            config.ecran || "",
+      ACCESSOIRES:      m ? m.accessoires.filter(a => (config.accessoires||{})[a.key]).map(a => a.label).join(", ") : "",
+      COMMENTAIRE:      config.commentaire || "",
       PRIX_UNITAIRE_HT: p.unitaire,
       ECO:              p.eco,
       TOTAL_HT:         p.total,
       _p:               p,
     }]);
     setModeleId("");
-    setConfig({ quantite:1, accessoires:{}, fonds:[] });
+    setConfig({ quantite:1, accessoires:{}, fonds:[], configuration:"", structure:"", exterieur:"", interieur:"", fond:"", habillage:"", banquette:"", panneaux:"", moquette:"", prise:"", ecran:"", commentaire:"" });
     setStep(1);
   };
 
